@@ -1,7 +1,7 @@
 {
   "name": "backslash",
   "description": "parse string escapes (\\n, \\r, etc.)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Qix (http://github.com/Qix-)",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "test": "node_modules/.bin/mocha"
   },
   "devDependencies": {
+    "istanbul": "^0.3.16",
     "mocha": "^2.2.5",
     "should": "^7.0.1"
   }
