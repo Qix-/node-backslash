@@ -78,6 +78,23 @@ it('should not overconsume high octals', function() {
   s.should.equal('\45' + '6'); // but just to be sure...
 });
 
+it('should allow non-important characters', function() {
+  var s = backslash('\\i');
+  s.should.equal('i');
+});
+
+it('should not allow invalid unicode characters', function() {
+  (function() {
+    backslash('\\uQIXX');
+  }).should.throw();
+});
+
+it('should not allow invalid hex characters', function() {
+  (function() {
+    backslash('\\xiQ');
+  }).should.throw();
+});
+
 function practical(str) {
   var parsed = eval('"' + str.replace('"', '\\"') + '"');
   return function() {
