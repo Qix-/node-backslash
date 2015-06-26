@@ -6,7 +6,7 @@ Parse collected strings with escapes.
 ```javascript
 var backslash = require('backslash');
 
-var s = backslash("\\\\tHello!\\nThis was escaped.");
+var s = backslash("\\\\\\tHello!\\nThis was escaped.");
 /*
 \	Hello!
 This was escaped.
