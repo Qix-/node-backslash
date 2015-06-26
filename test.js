@@ -37,6 +37,11 @@ it('should match backslashes', function() {
   s.should.equal('\\');
 });
 
+it('should not ignore backslash pairs', function() {
+  var s = backslash('\\\\\\n');
+  s.should.equal('\\\n');
+});
+
 it('should match all unicode characters', function() {
   this.timeout(0);
   for (var i = 0; i < 0xFFFF; i += 4) {
