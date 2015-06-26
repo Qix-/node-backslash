@@ -1,0 +1,13 @@
+{
+  "name": "backslash",
+  "description": "parse string escapes (\\n, \\r, etc.)",
+  "version": "0.1.0",
+  "author": "Qix (http://github.com/Qix-)",
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "should": "^7.0.1"
+  }
+}
