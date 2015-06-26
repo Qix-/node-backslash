@@ -3,6 +3,11 @@
   "description": "parse string escapes (\\n, \\r, etc.)",
   "version": "0.1.0",
   "author": "Qix (http://github.com/Qix-)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Qix-/node-backslash.git"
+  },
+  "bugs": "https://github.com/Qix-/node-backslash/issues",
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
