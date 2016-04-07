@@ -100,6 +100,27 @@ it('should not allow invalid hex characters', function() {
   }).should.throw();
 });
 
+describe('parseUntil', function () {
+  it('stops parsing at the stopChar', function () {
+    var input = '012 "567" 10';
+    backslash.parseUntil(input, 5, '"').should.deepEqual({end: 8, value: '567'});
+  });
+  
+  it('escapes values within the string', function () {
+    var input = '0 "3\\n6\\t9" 12';
+    backslash.parseUntil(input, 3, '"').should.deepEqual({end: 10, value: '3\n6\t9'});
+  });
+  
+  it('stop character can be escaped', function () {
+    var input = "0 '3\\'6\\t9' 12";
+    backslash.parseUntil(input, 3, '\'').should.deepEqual({end: 10, value: '3\'6\t9'});
+  });
+  
+  it('end will be str.length if stopChar is never found', function () {
+    backslash.parseUntil('abc', 0, '"').should.deepEqual({end: 3, value: 'abc'});
+  });
+});
+
 function practical(str) {
   var parsed = eval('"' + str.replace('"', '\\"') + '"');
   return function() {

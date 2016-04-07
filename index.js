@@ -8,55 +8,100 @@ function BackslashError(offset, err) {
   this.offset = offset;
 }
 
-module.exports = function backslash(str) {
-  return str.replace(
-      /\\(?:u(.{4})|x(.{2})|([0-7]{1,3})|((?![ux])[89a-zA-Z\\]))/g,
-      function(m, u, x, o, c, offset) {
-        switch (false) {
-        case u === undefined:
-          // check for invalid characters
-          // we do this here instead of in the source regex because
-          // javascript does it. :)
-          m = /[^a-f0-9]/gi.exec(u);
-          if (m !== null) {
-            throw new BackslashError(offset + m.index,
-                'Unexpected token ILLEGAL');
-          }
+function isOctalDigit(c) {
+  return c >= '0' && c <= '7';
+}
 
-          u = parseInt(u, 16);
-          // http://stackoverflow.com/a/9109467/510036
-          return punycode.ucs2.encode([u]);
+function isHexDigit(c) {
+  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
 
-        case x === undefined:
-          m = /[^a-f0-9]/gi.exec(x);
-          if (m !== null) {
-            throw new BackslashError(offset + m.index,
-                'Unexpected token ILLEGAL');
-          }
+function parseHex(u) {
+  u = parseInt(u, 16);
+  // http://stackoverflow.com/a/9109467/510036
+  return punycode.ucs2.encode([u]);
+}
 
-          x = parseInt(x, 16);
-          return punycode.ucs2.encode([x]);
+function process(arr, pos, stopChar) {
+  var escaped = false;
+  var ret = [];
 
-        case o === undefined:
-          var r = '';
-          if (o.length === 3 && parseInt(o[0]) > 3) {
-            r = o[2];
-            o = o.substring(0, 2);
-          }
-          o = punycode.ucs2.encode([parseInt(o, 8)]);
-          return o + r;
+  function assertHexDigit(pos) {
+    var c = arr[pos];
+    if (!isHexDigit(c)) {
+      throw new BackslashError(pos, 'Unexpected token ILLEGAL');
+    }
+    return c;
+  }
 
-        case c === undefined:
-          switch (c) {
-          case 'n': return '\n';
-          case 'r': return '\r';
-          case 'f': return '\f';
-          case 'b': return '\b';
-          case 't': return '\t';
-          case 'v': return '\v';
-          case '\\': return '\\';
-          default: return c;
+  while (pos < arr.length) {
+    var c = arr[pos];
+    pos++;
+    if (escaped) {
+      escaped = false;
+      switch (c) {
+        case 'n':
+          ret.push('\n');
+          continue;
+        case 'r':
+          ret.push('\r');
+          continue;
+        case 'f':
+          ret.push('\f');
+          continue;
+        case 'b':
+          ret.push('\b');
+          continue;
+        case 't':
+          ret.push('\t');
+          continue;
+        case 'v':
+          ret.push('\v');
+          continue;
+        case '\\':
+          ret.push('\\') ;
+          continue;
+      }
+      if (c === 'x') {
+        ret.push(parseHex(assertHexDigit(pos) + assertHexDigit(pos + 1)));
+        pos += 2;
+        continue;
+      }
+      if (c === 'u') {
+        ret.push(parseHex(assertHexDigit(pos) + assertHexDigit(pos + 1) + assertHexDigit(pos + 2) + assertHexDigit(pos + 3)));
+        pos += 4;
+        continue;
+      }
+      if (isOctalDigit(c)) {
+        var o;
+        if (isOctalDigit(o = arr[pos])) {
+          pos++;
+          c += o;
+          if (isOctalDigit(o = arr[pos]) && (c[0] <= '3')) {
+            pos++;
+            c += o;
           }
         }
-      });
+        ret.push(punycode.ucs2.encode([parseInt(c, 8)]));
+        continue;
+      }
+      ret.push(c);
+    } else if (c === '\\') {
+      escaped = true;
+    } else if (c === stopChar) {
+      pos--;
+      break;
+    } else {
+      ret.push(c);
+    }
+  }
+  return arguments.length === 3 ? {end: pos, value: ret.join('')} : ret.join('');
+}
+
+module.exports = function backslash(str) {
+  return process(str, 0);
+};
+
+module.exports.parseUntil = function parseUntil(str, pos, stopChar) {
+  return process(str, pos, stopChar);
 };
