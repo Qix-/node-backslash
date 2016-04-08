@@ -1,7 +1,7 @@
 {
   "name": "backslash",
   "description": "parse string escapes (\\n, \\r, etc.)",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "author": "Qix (http://github.com/Qix-)",
   "repository": {
     "type": "git",
