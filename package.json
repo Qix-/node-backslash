@@ -20,12 +20,15 @@
   ],
   "bugs": "https://github.com/Qix-/node-backslash/issues",
   "scripts": {
-    "test": "node_modules/.bin/mocha"
+    "test": "mocha"
+  },
+  "dependencies": {
+    "punycode": "^2.3.1"
   },
   "devDependencies": {
-    "coveralls": "^2.11.2",
-    "istanbul": "^0.3.16",
-    "mocha": "^2.2.5",
-    "should": "^7.0.1"
+    "coveralls": "^3.1.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^10.8.2",
+    "should": "^13.2.3"
   }
 }

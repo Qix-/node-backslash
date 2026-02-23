@@ -1,6 +1,6 @@
 'use strict';
 
-var punycode = require('punycode');
+var punycode = require('punycode/');
 
 function BackslashError(offset, err) {
   this.__proto__ = new Error(err);
